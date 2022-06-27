@@ -85,3 +85,30 @@ for c in range(3):
         wallet[c].make_payment(100)
         print("New balance = ", wallet[c].get_balance())
     print()
+
+
+# predatory_credit_card.py
+
+#Modify the PredatoryCreditCard class from the lecture examples, such that a customer is assigned a minimum monthly payment, as a percentage of the balance, and
+#such that a late fee is assessed if the customer does not subsequently pay that minimum amount before the next monthly cycle
+
+from credit_card import CreditCard
+
+
+class PredatoryCreditCard(CreditCard):
+    def __init__(self, customer, bank, acnt, limit, apr):
+        super().__init__(customer, bank, acnt, limit)
+        self._apr = apr  # annual percentage rate
+
+    def process_month(self):
+        """Monthly interest on outstanding balance"""
+        if self._balance > 0:
+            monthly_factor = pow(1 + self._apr, 1/12)
+            self._balance *= monthly_factor
+
+    def charge(self, price):
+        """ charge a given price to the card """
+        success = super().charge(price)
+        if not success:
+            self._balance += 5  # assess a penalty
+        return success
